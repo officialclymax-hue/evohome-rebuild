@@ -6,8 +6,10 @@ import { existsSync, readdirSync } from 'fs';
 export class DebugAdminController {
   @Get()
   info() {
-    const resolved = join(__dirname, '..', 'public', 'admin');
+    // This MUST match the ServeStatic rootPath logic in AppModule
+    const resolved = join(process.cwd(), 'packages', 'backend', 'public', 'admin');
     const indexPath = join(resolved, 'index.html');
+
     const exists = existsSync(indexPath);
     let listing: string[] = [];
     try {
@@ -15,13 +17,15 @@ export class DebugAdminController {
     } catch {
       listing = ['<cannot read directory>'];
     }
+
     return {
+      cwd: process.cwd(),
       __dirname,
       resolvedAdminDir: resolved,
       indexHtml: indexPath,
       indexExists: exists,
       dirListing: listing,
-      hint: 'ServeStatic rootPath should match resolvedAdminDir. indexExists must be true.',
+      hint: 'indexExists must be true; resolvedAdminDir must list index.html'
     };
   }
 }
