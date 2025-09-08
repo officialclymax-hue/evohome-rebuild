@@ -5,8 +5,9 @@ import { join } from 'path';
 
 import { AppHealthModule } from './app-health/app-health.module';
 import { DebugAdminModule } from './debug-admin/debug-admin.module';
+import { AdminSpaModule } from './admin-spa/admin-spa.module';
 
-// Feature modules — keep only ones you actually have:
+// Feature modules — keep only the ones you actually have
 import { AuthModule } from './auth/auth.module';
 import { CompanyInfoModule } from './company-info/company-info.module';
 import { ServicesModule } from './services/services.module';
@@ -22,20 +23,26 @@ import { ChatbotModule } from './chatbot/chatbot.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
-    /**
-     * IMPORTANT: cwd is already .../packages/backend
-     * So the static folder is just ./public/admin from there.
-     */
+    // Serve static assets (JS/CSS) under /admin/**
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public', 'admin'),
       serveRoot: '/admin',
-      serveStaticOptions: { index: true },
+      serveStaticOptions: {
+        index: false,           // let the controller serve index.html
+        fallthrough: true
+      },
     }),
 
+    // Root + health
     AppHealthModule,
+
+    // Debug path inspector
     DebugAdminModule,
 
-    // API modules
+    // SPA controller that always returns index.html for /admin and /admin/*
+    AdminSpaModule,
+
+    // Your API feature modules
     AuthModule,
     CompanyInfoModule,
     ServicesModule,
