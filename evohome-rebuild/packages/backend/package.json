@@ -9,9 +9,9 @@
     "schema": "prisma/schema.prisma"
   },
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "build": "nest build",
+    "start": "node -r ts-node/register src/main.ts",
+    "start:dev": "npx nest start --watch",
+    "build": "npx nest build",
     "start:prod": "node dist/main.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
