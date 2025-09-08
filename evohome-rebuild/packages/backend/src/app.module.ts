@@ -3,14 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
-// Health/root
 import { AppHealthModule } from './app-health/app-health.module';
-
-// TEMP: debug admin path module (we’ll keep it until verified)
 import { DebugAdminModule } from './debug-admin/debug-admin.module';
 
-// Feature modules — KEEP ONLY the ones you actually have.
-// If any of these folders don’t exist in src/, delete the import AND the entry.
+// Feature modules — keep only ones you actually have:
 import { AuthModule } from './auth/auth.module';
 import { CompanyInfoModule } from './company-info/company-info.module';
 import { ServicesModule } from './services/services.module';
@@ -27,25 +23,19 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     ConfigModule.forRoot({ isGlobal: true }),
 
     /**
-     * IMPORTANT:
-     * Use process.cwd() to point to the REAL backend root (not dist).
-     * Your Render working dir is: /opt/render/project/src/evohome-rebuild
-     * We add: packages/backend/public/admin
-     * => /opt/render/project/src/evohome-rebuild/packages/backend/public/admin
+     * IMPORTANT: cwd is already .../packages/backend
+     * So the static folder is just ./public/admin from there.
      */
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'packages', 'backend', 'public', 'admin'),
+      rootPath: join(process.cwd(), 'public', 'admin'),
       serveRoot: '/admin',
       serveStaticOptions: { index: true },
     }),
 
-    // Root + health
     AppHealthModule,
-
-    // Debug (shows which path we resolved)
     DebugAdminModule,
 
-    // YOUR API MODULES
+    // API modules
     AuthModule,
     CompanyInfoModule,
     ServicesModule,
