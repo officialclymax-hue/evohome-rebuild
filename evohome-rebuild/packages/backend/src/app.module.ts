@@ -3,11 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
-// Health + root module
 import { AppHealthModule } from './app-health/app-health.module';
+import { DebugAdminModule } from './debug-admin/debug-admin.module';
 
-// === Feature modules — make sure each of these folders exists under src/ ===
-// If any folder is missing, remove the corresponding import and item below.
+// Feature modules — keep only those you actually have:
 import { AuthModule } from './auth/auth.module';
 import { CompanyInfoModule } from './company-info/company-info.module';
 import { ServicesModule } from './services/services.module';
@@ -23,17 +22,17 @@ import { ChatbotModule } from './chatbot/chatbot.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
-    // Serve /admin from backend/public/admin (works on Render)
+    // Use __dirname -> dist/... then go up to backend root and into public/admin
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'public', 'admin'),
+      rootPath: join(__dirname, '..', 'public', 'admin'),
       serveRoot: '/admin',
       serveStaticOptions: { index: true },
     }),
 
-    // Root + health
     AppHealthModule,
+    DebugAdminModule,
 
-    // === Register your API feature modules here ===
+    // Register your API modules
     AuthModule,
     CompanyInfoModule,
     ServicesModule,
