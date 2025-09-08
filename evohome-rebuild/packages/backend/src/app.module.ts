@@ -7,7 +7,7 @@ import { AppHealthModule } from './app-health/app-health.module';
 import { DebugAdminModule } from './debug-admin/debug-admin.module';
 import { AdminSpaModule } from './admin-spa/admin-spa.module';
 
-// Feature modules — keep only the ones you actually have
+// keep only modules you actually have:
 import { AuthModule } from './auth/auth.module';
 import { CompanyInfoModule } from './company-info/company-info.module';
 import { ServicesModule } from './services/services.module';
@@ -23,26 +23,21 @@ import { ChatbotModule } from './chatbot/chatbot.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
-    // Serve static assets (JS/CSS) under /admin/**
+    // Serve /admin/assets/... from the filesystem
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public', 'admin'),
       serveRoot: '/admin',
       serveStaticOptions: {
-        index: false,           // let the controller serve index.html
+        index: false,   // SPA controller will serve index.html
         fallthrough: true
       },
     }),
 
-    // Root + health
     AppHealthModule,
+    DebugAdminModule,   // keep while we verify
+    AdminSpaModule,     // returns index.html for /admin (non-asset paths)
 
-    // Debug path inspector
-    DebugAdminModule,
-
-    // SPA controller that always returns index.html for /admin and /admin/*
-    AdminSpaModule,
-
-    // Your API feature modules
+    // API modules
     AuthModule,
     CompanyInfoModule,
     ServicesModule,
