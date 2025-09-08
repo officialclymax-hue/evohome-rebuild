@@ -24,10 +24,10 @@ import { ChatbotModule } from './chatbot/chatbot.module';
 
     // Use __dirname -> dist/... then go up to backend root and into public/admin
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public', 'admin'),
-      serveRoot: '/admin',
-      serveStaticOptions: { index: true },
-    }),
+  rootPath: join(process.cwd(), 'packages', 'backend', 'public', 'admin'),
+  serveRoot: '/admin',
+  serveStaticOptions: { index: true },
+}),
 
     AppHealthModule,
     DebugAdminModule,
