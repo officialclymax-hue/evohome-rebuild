@@ -1,11 +1,11 @@
 name: Build Admin and Publish to Backend
 
 on:
-  workflow_dispatch:          # allows manual run
+  workflow_dispatch:
   push:
-    branches: [ main ]        # runs on pushes to main
+    branches: [ main ]
     paths:
-      - 'evohome-rebuild/packages/admin/**'   # only when admin source changes
+      - 'evohome-rebuild/packages/admin/**'
 
 permissions:
   contents: write
