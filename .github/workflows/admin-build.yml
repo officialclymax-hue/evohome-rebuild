@@ -15,25 +15,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout (full history)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Show repo tree (top)
+        run: |
+          echo "::group::TREE_TOP"
+          ls -la
+          echo "::endgroup::"
+          echo "::group::TREE_NESTED"
+          ls -la ./evohome-rebuild
+          ls -la ./evohome-rebuild/packages
+          ls -la ./evohome-rebuild/packages/admin || true
+          echo "::endgroup::"
 
       - name: Use Node 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            evohome-rebuild/packages/admin/package-lock.json
+            evohome-rebuild/packages/admin/package.json
 
       - name: Install & Build Admin
         working-directory: ./evohome-rebuild/packages/admin
         run: |
-          npm ci || npm install
+          echo "Node: $(node -v)"
+          echo "NPM:  $(npm -v)"
+          test -f package.json || (echo "package.json missing in packages/admin" && exit 1)
+          npm ci || npm install --legacy-peer-deps
+          npx vite --version || npm i -D vite @vitejs/plugin-react
           npm run build
+          test -d dist || (echo "dist/ not produced by build" && exit 1)
+          echo "Built files:"
+          ls -la dist | sed 's/^/  /'
 
       - name: Replace backend public/admin
         run: |
           rm -rf ./evohome-rebuild/packages/backend/public/admin
           mkdir -p ./evohome-rebuild/packages/backend/public/admin
           cp -r ./evohome-rebuild/packages/admin/dist/* ./evohome-rebuild/packages/backend/public/admin/
+          echo "Backend public/admin contents:"
+          ls -la ./evohome-rebuild/packages/backend/public/admin | sed 's/^/  /'
 
       - name: Commit static admin into backend
         run: |
