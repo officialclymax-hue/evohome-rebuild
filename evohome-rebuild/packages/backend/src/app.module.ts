@@ -3,13 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
-/**
- * NEW: adds root "/" and "/health" without touching your other modules.
- */
+// Health + root module (from earlier step)
 import { AppHealthModule } from './app-health/app-health.module';
 
 /**
- * KEEP YOUR EXISTING IMPORTS HERE (if you have them), e.g.:
+ * TODO: Re-add your feature modules here if you already had them, e.g.:
  *
  * import { AuthModule } from './auth/auth.module';
  * import { CompanyInfoModule } from './company-info/company-info.module';
@@ -27,35 +25,27 @@ import { AppHealthModule } from './app-health/app-health.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
-    /**
-     * Serve static admin at /admin from /public/admin/index.html
-     * This works IMMEDIATELY with the placeholder we added.
-     */
+    // Serve /admin from <repo root>/packages/backend/public/admin
+    // Using process.cwd() makes this stable on Render:
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public', 'admin'),
+      rootPath: join(process.cwd(), 'public', 'admin'),
       serveRoot: '/admin',
       serveStaticOptions: { index: true },
     }),
 
-    /**
-     * NEW: Mount "/" and "/health" without affecting your other routes.
-     */
     AppHealthModule,
 
-    /**
-     * KEEP YOUR EXISTING MODULES HERE (if you have them), e.g.:
-     *
-     * AuthModule,
-     * CompanyInfoModule,
-     * ServicesModule,
-     * CountiesModule,
-     * BlogModule,
-     * GalleryModule,
-     * TestimonialsModule,
-     * FormsModule,
-     * UploadsModule,
-     * ChatbotModule,
-     */
+    // Re-add your feature modules here (uncomment & keep your original order):
+    // AuthModule,
+    // CompanyInfoModule,
+    // ServicesModule,
+    // CountiesModule,
+    // BlogModule,
+    // GalleryModule,
+    // TestimonialsModule,
+    // FormsModule,
+    // UploadsModule,
+    // ChatbotModule,
   ],
 })
 export class AppModule {}
