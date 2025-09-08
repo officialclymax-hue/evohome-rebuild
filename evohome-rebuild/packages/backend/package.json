@@ -5,6 +5,9 @@
   "engines": {
     "node": ">=18 <23"
   },
+  "prisma": {
+  "schema": "prisma/schema.prisma"
+}
   "scripts": {
     "start": "nest start",
     "start:dev": "nest start --watch",
