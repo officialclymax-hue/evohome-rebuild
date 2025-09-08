@@ -40,26 +40,25 @@ jobs:
             evohome-rebuild/packages/admin/package-lock.json
             evohome-rebuild/packages/admin/package.json
 
-      - name: Install & Build Admin
+            - name: Install & Build Admin
         working-directory: ./evohome-rebuild/packages/admin
         run: |
-          echo "Node: $(node -v)"
-          echo "NPM:  $(npm -v)"
-          test -f package.json || (echo "package.json missing in packages/admin" && exit 1)
           npm ci || npm install --legacy-peer-deps
-          npx vite --version || npm i -D vite @vitejs/plugin-react
           npm run build
-          test -d dist || (echo "dist/ not produced by build" && exit 1)
-          echo "Built files:"
-          ls -la dist | sed 's/^/  /'
+          echo "---- dist listing ----"
+          ls -la dist
+          echo "---- dist/assets listing ----"
+          ls -la dist/assets || true
 
       - name: Replace backend public/admin
         run: |
           rm -rf ./evohome-rebuild/packages/backend/public/admin
           mkdir -p ./evohome-rebuild/packages/backend/public/admin
           cp -r ./evohome-rebuild/packages/admin/dist/* ./evohome-rebuild/packages/backend/public/admin/
-          echo "Backend public/admin contents:"
-          ls -la ./evohome-rebuild/packages/backend/public/admin | sed 's/^/  /'
+          echo "---- target listing ----"
+          ls -la ./evohome-rebuild/packages/backend/public/admin
+          echo "---- target/assets listing ----"
+          ls -la ./evohome-rebuild/packages/backend/public/admin/assets || true
 
       - name: Commit static admin into backend
         run: |
