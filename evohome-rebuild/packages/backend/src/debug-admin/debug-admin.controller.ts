@@ -6,8 +6,8 @@ import { existsSync, readdirSync } from 'fs';
 export class DebugAdminController {
   @Get()
   info() {
-    // This MUST match the ServeStatic rootPath logic in AppModule
-    const resolved = join(process.cwd(), 'packages', 'backend', 'public', 'admin');
+    // cwd is the backend root on Render
+    const resolved = join(process.cwd(), 'public', 'admin');
     const indexPath = join(resolved, 'index.html');
 
     const exists = existsSync(indexPath);
@@ -25,7 +25,7 @@ export class DebugAdminController {
       indexHtml: indexPath,
       indexExists: exists,
       dirListing: listing,
-      hint: 'indexExists must be true; resolvedAdminDir must list index.html'
+      hint: 'indexExists must be true; dirListing should include index.html'
     };
   }
 }
