@@ -1,0 +1,44 @@
+name: Build Admin and Publish to Backend
+
+on:
+  workflow_dispatch:   # lets you run it manually
+  push:
+    branches: [ main ] # runs automatically on every push to main
+    paths:
+      - 'evohome-rebuild/packages/admin/**' # only when admin code changes
+
+permissions:
+  contents: write
+
+jobs:
+  build-admin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install & Build Admin
+        working-directory: ./evohome-rebuild/packages/admin
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Replace backend public/admin
+        run: |
+          rm -rf ./evohome-rebuild/packages/backend/public/admin
+          mkdir -p ./evohome-rebuild/packages/backend/public/admin
+          cp -r ./evohome-rebuild/packages/admin/dist/* ./evohome-rebuild/packages/backend/public/admin/
+
+      - name: Commit static admin into backend
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add ./evohome-rebuild/packages/backend/public/admin
+          git commit -m "ci: update admin static" || echo "No changes to commit"
+          git push
