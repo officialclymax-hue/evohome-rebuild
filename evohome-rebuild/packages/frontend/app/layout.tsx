@@ -3,8 +3,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'EvoHome Improvements',
-  description: 'Home improvements that save energy and boost comfort across the UK.',
-  openGraph: { title: 'EvoHome Improvements', type: 'website' }
+  description: 'Energy-smart home improvements across the UK.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
