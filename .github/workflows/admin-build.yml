@@ -20,14 +20,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Show repo tree (top)
+      - name: Show repo tree
         run: |
-          echo "::group::TREE_TOP"
+          echo "::group::TOP"
           ls -la
           echo "::endgroup::"
-          echo "::group::TREE_NESTED"
-          ls -la ./evohome-rebuild
-          ls -la ./evohome-rebuild/packages
+          echo "::group::NESTED"
+          ls -la ./evohome-rebuild || true
+          ls -la ./evohome-rebuild/packages || true
           ls -la ./evohome-rebuild/packages/admin || true
           echo "::endgroup::"
 
@@ -40,14 +40,16 @@ jobs:
             evohome-rebuild/packages/admin/package-lock.json
             evohome-rebuild/packages/admin/package.json
 
-            - name: Install & Build Admin
+      - name: Install & Build Admin
         working-directory: ./evohome-rebuild/packages/admin
         run: |
           npm ci || npm install --legacy-peer-deps
+          # ensure plugins present even if lockfile misses dev deps
+          npm i -D tailwindcss postcss autoprefixer @vitejs/plugin-react --no-audit --no-fund || true
           npm run build
-          echo "---- dist listing ----"
-          ls -la dist
-          echo "---- dist/assets listing ----"
+          echo "---- dist ----"
+          ls -la dist || true
+          echo "---- dist/assets ----"
           ls -la dist/assets || true
 
       - name: Replace backend public/admin
@@ -56,8 +58,7 @@ jobs:
           mkdir -p ./evohome-rebuild/packages/backend/public/admin
           cp -r ./evohome-rebuild/packages/admin/dist/* ./evohome-rebuild/packages/backend/public/admin/
           echo "---- target listing ----"
-          ls -la ./evohome-rebuild/packages/backend/public/admin
-          echo "---- target/assets listing ----"
+          ls -la ./evohome-rebuild/packages/backend/public/admin || true
           ls -la ./evohome-rebuild/packages/backend/public/admin/assets || true
 
       - name: Commit static admin into backend
