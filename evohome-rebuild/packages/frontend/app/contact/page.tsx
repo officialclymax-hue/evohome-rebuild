@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 
 export default function ContactPage() {
@@ -12,7 +11,8 @@ export default function ContactPage() {
     e.preventDefault();
     setBusy(true); setErr(null); setMsg(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || process.env.API_BASE || 'https://evohome-rebuild.onrender.com'}/form-submissions`, {
+      const base = process.env.NEXT_PUBLIC_API_BASE || process.env.API_BASE || 'https://evohome-rebuild.onrender.com';
+      const res = await fetch(`${base}/x/form-submissions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -22,9 +22,7 @@ export default function ContactPage() {
       setForm({ name:'', email:'', phone:'', postcode:'', service:'', message:'', marketingConsent:false, dataConsent:true });
     } catch (e:any) {
       setErr(e.message || 'Failed to submit');
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   }
 
   return (
