@@ -33,18 +33,29 @@ function isoToShort(s){ try{ return new Date(s).toLocaleString() } catch{ return
 // Auth
 async function tryLoadMe(){
   try {
-    await api('/health'); // simple authless call proves server is up
+    await api('/health'); // proves server is up
     const t = localStorage.getItem(tokenKey);
     if (!t) return false;
-    // probe an authed endpoint if you have one; otherwise skip
     return true;
   } catch { return false; }
 }
 
 async function login(email, password){
-  const data = await api('/auth/login',{ method:'POST', body: JSON.stringify({ email, password }) });
-  if (!data?.token) throw new Error('No token returned');
-  localStorage.setItem(tokenKey, data.token);
+  // Use non-conflicting shim endpoints under /x/*
+  try {
+    const data = await api('/x/auth/login-plain',{ method:'POST', body: JSON.stringify({ email, password }) });
+    if (!data?.token) throw new Error('No token');
+    localStorage.setItem(tokenKey, data.token);
+    return;
+  } catch (e) {}
+  // Fallback: try your existing /auth/login if present
+  try {
+    const data = await api('/auth/login',{ method:'POST', body: JSON.stringify({ email, password }) });
+    if (!data?.token) throw new Error('No token');
+    localStorage.setItem(tokenKey, data.token);
+    return;
+  } catch {}
+  throw new Error('Login failed');
 }
 
 // Company info
@@ -71,7 +82,6 @@ async function saveCompany(){
   text('companyErr',''); text('companyMsg','');
   const payload = getForm(['name','email','phone','website','address','openingHours','facebook','instagram','twitter','youtube']);
   try {
-    // if your API requires POST first time then PUT, you can detect by GET result, but PUT is fine if you handle upsert
     const data = await api('/company-info', { method:'PUT', body: JSON.stringify(payload) });
     text('companyMsg','Saved ✔');
   } catch(e){ text('companyErr', e.message || 'Save failed'); }
@@ -82,7 +92,7 @@ async function loadLeads(){
   const tbody = $('leadsTable').querySelector('tbody');
   tbody.innerHTML = '';
   try {
-    const items = await api('/form-submissions?limit=20').catch(()=>[]);
+    const items = await api('/x/form-submissions?limit=20').catch(()=>[]);
     for(const it of (items||[])){
       const tr = document.createElement('tr');
       tr.innerHTML = `<td>${isoToShort(it.createdAt||'')}</td>
