@@ -5,6 +5,14 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { Module } from '@nestjs/common';
+import { BootstrapController } from './bootstrap.controller';
+import { LoginPlainController } from './login-plain.controller';
+
+@Module({
+  controllers: [BootstrapController, LoginPlainController],
+})
+export class AuthModule {}
 
 @Module({
   imports: [
