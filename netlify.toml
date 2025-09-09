@@ -1,5 +1,5 @@
 [build]
-  base    = "repo/evohome-rebuild/packages/frontend"
+  base    = "evohome-rebuild/packages/frontend"
   command = "npm install --legacy-peer-deps && npm run build"
   publish = ".next"
 
